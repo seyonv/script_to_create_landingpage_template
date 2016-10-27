@@ -1,0 +1,21 @@
+source 'https://rubygems.org'
+ruby "2.2.2"
+
+gem 'rspec'
+# gem 'colorize'
+gem 'capybara'
+gem 'poltergeist'
+gem 'selenium-webdriver'
+# gem 'pry'
+gem 'colorize'
+gem 'pry-byebug'
+
+# probably do NOT want the below two gems
+gem 'pry-doc'
+gem 'pry-rails'
+gem 'yard'
+
+
+group :test do
+  gem 'shoulda-matchers'
+end
