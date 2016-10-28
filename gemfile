@@ -7,7 +7,6 @@ gem 'capybara'
 gem 'poltergeist'
 gem 'selenium-webdriver'
 # gem 'pry'
-gem 'colorize'
 gem 'pry-byebug'
 
 # probably do NOT want the below two gems
