@@ -1,8 +1,7 @@
-# initially just convert the existing Bash Script
-# (create_with_index.sh to Ruby)
+
 require 'colorize'
 require 'fileutils'
-# Command to run program with usage of 1.txt (instead of standard input, use standard file stream)
+
 Prompt=">"
 Welcome_prompt="Follow Instructions below to create new index file with organized sections"
 Get_rails_repo_prompt="Enter Full path to the Rails Repo you are working in: "
@@ -28,6 +27,22 @@ def welcome_prompt_and_starting_information()
   end
 end
 
+# still need to test and implement this function for Reaalzz
+def insert_line_before_another_line(filename,line_to_insert,line_to_find)
+	# This function creates a secondary copy of the file, modifies this and only after this is fully completed
+	# does it rename files
+	oldfile=File.open(filename)
+	newfile=File.open('new_file.txt','w')
+	oldfile.each_line do |line|
+		if (line.include?("#{line_to_find}"))
+			newline.print "#{line_to_insert}"
+		end
+	end
+	newfile.print line
+	File.rename(oldfile, "old.orig")
+	File.rename(newfile,oldfile)
+	File.delete("old.orig")
+end
 def get_view_location()
 	print Get_view_location_prompt, "\n", Prompt
 	@view_loc = gets.chomp
@@ -83,7 +98,6 @@ def insert_divs_to_index()
 			end
 		end
 		if (line.include?("<body>"))
-			puts "ASDASDLHALSDHASLDJH IN THE BODY!!!"
 			newfile.print "<%=stylesheet_link_tag \"custom_landing#{@num}\"%>\n"
 		end
 		newfile.print line
@@ -105,14 +119,8 @@ def create_divs_from_section()
 
 		
 
-		# NEED TO INSERT THE CORRECT CONTENT INTO THEM NOW (render stylesheet and javascript)
-		# <%= stylesheet_link_tag "goals/pick_goals" %>
-		# ------------put html above this line
-		# <div class="container">
-		# /t <div class="row">
-		# /t </div>
-		# </div>
-		# <%= javascript_include_tag "goals/pick_goals" %>
+		# Insert the stylesheet_link_tag and javascript_include_tag
+		# at the right location
 
 		stylesheet_name="#{@layout_name}"
 		stylesheet_text="<%= stylesheet_link_tag \"#{stylesheet_name}\" %> \n"

@@ -4,4 +4,5 @@
 
 
 <!-- BETTER names for files/folders/locations -->
-<!-- Function -->
+<!-- Function that handles inserting a line BEFORE a particular line
+(parameters are a=file_to_insert_in, b="line_to_serach_for_in_file, c="line to insert before that line"-->
