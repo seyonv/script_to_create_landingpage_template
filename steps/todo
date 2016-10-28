@@ -1,0 +1,39 @@
+List of Steps of Execution:
+(This is the order of execution as it currently appears in main.rb)
+
+
+1. Get Location of Rails Repo from User
+2. Get Name of folder where index#{@num}.html.erb is to be created
+(Note that here, steps 3 & 4  are sequentially combined and iterated on
+as opposed to one being finished before the other is started)
+3. Get List of Sections user wants to create
+4. Generate index#{@num}.html.erb (include render statements)
+    a) Copy Header to index (from a reference header.html.erb file)
+    b) Create divs for each section the user specified 
+        0. Find the location of "</body>". Directly above this is where all the lines are to be inserted into
+        i. Need to define id for each section(do a sort of transformation as a "get_id" function
+        ii. Need to define the name of the html.erb file to be rendered for the particular section
+5. Generate the html.erb file for EACH section
+   a) Create the stylesheet_link_tag and the javascript_include_tag that needs to be included for each section. Also copy over text from "bootstrap.html.erb" which is to be inserted in between the two of those
+   b) Actually CREATE the html file for the section (which will have every word separated by underscores and have a leading underscore as well because it's a template)
+   b) Within the appropriate section  
+6. Generate the Stylesheets and Javascript for each section
+    a) Define variables that set the LOCATION to write the stylesheets and javascripts to create the stylesheet in root_loc/app/assets/stylesheets/(folder from step 2)/landing#{@num}
+    b) Use mkdir to create the actual folder locations, which don't currently exist
+    c) Define variable that sets the NAME of the stylesheet and the javascript 
+    d) Create the actual file(standard procedure is to open the file and just write blank "")
+7. Generate the correct precompilation files in assets.rb 
+    a) precompilation file for EACH css file (1 per section)
+    b) precompilation file for EACH js file (1 per section)
+    c) precompilation file for the custom_landing.html.erb
+8. Add lines to custom_landing#{@num}.css.less
+9. Adding lines to the routes file
+    a) Find the very last line of the file (going to insert line right above that)
+    b) Insert "get '#{@controller_name}/index#{@num}"
+10. Mapping the newly created index html file to a corresponding action in the controller
+    a) Define the text to be created in "def index#{@num} end"
+    b) Find the LAST occurence of end (use a starts_with NOT an includes? selector
+    and ensure that there's a way for)
+11. Print All Variables (optional)
+    a) Print all values and variables used that would PROVIDE A VISUAL OVERVIEW
+    THAT EXECUTION WENT AS PLANNED

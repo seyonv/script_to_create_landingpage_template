@@ -1,0 +1,24 @@
+Function Call Order (and corresponding order of creation)
+
+1. prompt_user_for_input(get the input from the user)
+	->calls get_value_of_counter() which automatically names 
+2.
+3.
+4.
+5
+
+--------------------------------------------
+What are the OBJECTS (and hence the corresponding classes)
+-> Going to try and make it an object-oriented design
+->
+->
+
+(Think about the problem in the context of the )
+Classes there could be 
+
+class RailsRepo
+end
+
+class Controlller
+class PageSection
+end

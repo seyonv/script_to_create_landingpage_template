@@ -1,60 +1,47 @@
-
+require_relative "additional_functions"
 require 'colorize'
 require 'fileutils'
 
 Prompt=">"
+
 Welcome_prompt="Follow Instructions below to create new index file with organized sections"
 Get_rails_repo_prompt="Enter Full path to the Rails Repo you are working in: "
 Get_view_location_prompt="Enter Relative path to the specific VIEW location where all folders/files are to be placed: \n(e.g. app/views/home) \n"
 Get_sections_prompt="\nEnter a list of EVERY section you want to create (one per line). ( e.g. Above the fold) and Enter Blankline to end input \n"
 
-def welcome_prompt_and_starting_information()
+def get_value_of_counter()
+	counter_file="counter.txt"
+	if File.file?(counter_file)
+		puts "Curr Dir: ", Dir.pwd
+		puts old_val=File.open(counter_file) {|f| f.readline}
+		File.open(counter_file,'w') {|f| f.write(old_val.to_i+1)}
+		@num=old_val.to_i+1
+	else
+		File.new(counter_file,'w').puts("1")
+	end
+end
+def prompt_user_for_input()
   # puts Welcome_prompt.green
   puts "\n",Welcome_prompt.upcase.colorize(:color => :white, :background => :light_blue)
-
+  
   print Get_rails_repo_prompt, "\n", Prompt
   @rails_repo = gets.chomp
-  Dir.chdir(@rails_repo)
-  # exec('cd ')
-  counter_file="counter.txt"
-  if File.file?(counter_file)
-  	puts "Curr Dir: ", Dir.pwd
-  	puts old_val=File.open(counter_file) {|f| f.readline}
-  	File.open(counter_file,'w') {|f| f.write(old_val.to_i+1)}
-  	@num=old_val.to_i+1
-  else
-  	File.new(counter_file,'w').puts("1")
-  end
+  
+  print Get_view_location_prompt, "\n", Prompt
+  @view_loc = gets.chomp
+  
+  @full_path_to_view=@rails_repo+"/"+@view_loc
+  Dir.chdir(@full_path_to_view)
+  
+  @controller_name=@view_loc
+  @controller_name.slice!("app/views/")
+  @controller_file="#{@rails_repo}/app/controllers/#{@controller_name}_controller.rb"
+
+ 	get_value_of_counter()
 end
 
-# still need to test and implement this function for Reaalzz
-def insert_line_before_another_line(filename,line_to_insert,line_to_find)
-	# This function creates a secondary copy of the file, modifies this and only after this is fully completed
-	# does it rename files
-	oldfile=File.open(filename)
-	newfile=File.open('new_file.txt','w')
-	oldfile.each_line do |line|
-		if (line.include?("#{line_to_find}"))
-			newline.print "#{line_to_insert}"
-		end
-	end
-	newfile.print line
-	File.rename(oldfile, "old.orig")
-	File.rename(newfile,oldfile)
-	File.delete("old.orig")
-end
-def get_view_location()
-	print Get_view_location_prompt, "\n", Prompt
-	@view_loc = gets.chomp
-	Dir.chdir(@view_loc)
-	puts Dir.pwd
-	@controller_name=@view_loc
-	@controller_name.slice!("app/views/")
-	@controller_file="#{@rails_repo}/app/controllers/#{@controller_name}_controller.rb"
-	puts "VALUE OF CONTROLLER FILE: #{@controller_file}"
-end
 
-def get_list_of_sections()
+def get_sections_from_user()
 	print Get_sections_prompt,"\n",Prompt
 	input=gets.chomp
 	@sections=[]
@@ -66,11 +53,14 @@ def get_list_of_sections()
 	puts "Sections: #{@sections}"
 end
 
+# This function literally pastes one file to another (file being pasted to is only created
+# in this function. Doesn't exist before)
 def copy_header_to_index()
+	# this works because current direcotry is @view_loc
 	@indexfile="index#{@num}.html.erb"
 	@indexfile_without_html="index#{@num}"
 	header_file="/Users/seyonvasantharajan/Desktop/web_scripts/auto_generate_index/header.html.erb"
-	@create_loc=@view_loc+"/landing#{@num}"
+	@create_loc=@controller_name+"/landing#{@num}"
 	puts "Current directory is #{Dir.pwd}"
 	FileUtils.mkdir_p "landing#{@num}"
 	@create_loc.slice!("app/views/")
@@ -84,15 +74,12 @@ def copy_header_to_index()
 end
 
 def insert_divs_to_index()
-	# Goal is to insert all of the divs (from element 1 to element n) right above </body>
-	# Sequentially go through file, line-by-line and go to for loop IF you find 
-	# a particular line ("</body>")
+	# Goal is to insert all of the divs (from element 1 to element n) right above </body> by Sequentailly going through file line-by-line
 	oldfile = File.open(@indexfile)
 	newfile = File.open("new_file.html.erb", "w")
 
 	oldfile.each_line do |line|
 		if (line.include?("</body>"))
-			# now go through @full_section_text and output 
 			@full_section_text.each do |t|
 				newfile.print t
 			end
@@ -111,16 +98,22 @@ def create_divs_from_section()
 	@sections.each do |s|
 		e_dash=s.gsub(" ","-") 
 		e_score=s.gsub(" ","_")
-		# MAY HAVE TWO MORE ARRAYS(instance_variables here) so that they can be completed as 
-		# required
 		@id_name="lp#{@num}-#{e_dash}"
 		@layout_name="#{@create_loc}/#{e_score}"
 		@section_name=e_score
 
-		
+		# --------------------------------------------------------
+		# GENERATE SECTION TEXT WITHIN Index#{@num}.html.erb
+		lp_text="<div id=\"#{@id_name}\"> \n"		
+		render_text="\t <%= render '#{@layout_name}' %> \n"
+		end_div_text="</div> \n"
 
+		full_text=lp_text+render_text+end_div_text
+		@full_section_text.push(full_text)
+
+		# ========================================================
 		# Insert the stylesheet_link_tag and javascript_include_tag
-		# at the right location
+		# at the right location in the template file FOR the section
 
 		stylesheet_name="#{@layout_name}"
 		stylesheet_text="<%= stylesheet_link_tag \"#{stylesheet_name}\" %> \n"
@@ -133,21 +126,13 @@ def create_divs_from_section()
 
 		@full_html_text=stylesheet_text+bootstrap_text+javascript_text
 		# ========================================================
-		# CREATES THE HTML FILES FOR USAGE
+		# CREATES THE HTML FILES FOR USAGE - continued
 		html_file_name="#{@rails_repo}/app/views/#{@create_loc}/_#{e_score}.html.erb"
 		puts "HTML_FILE_NAME: #{html_file_name}"
 		# html_file=File.open(html_file_name,"w+")
 		File.open(html_file_name,"w+") {|f| f.write(@full_html_text)}
 
-		# --------------------------------------------------------
-		# This is used to create section_text in indexfile
-		lp_text="<div id=\"#{@id_name}\"> \n"		
-		render_text="\t <%= render '#{@layout_name}' %> \n"
-		end_div_text="</div> \n"
-
-		full_text=lp_text+render_text+end_div_text
-		@full_section_text.push(full_text)
-
+		
 		# ========================================================
 		# Create the CSS and JS files in the correct location
 		
@@ -202,13 +187,9 @@ def create_divs_from_section()
 		puts "line is #{line}"
 		if (line.include?("end"))
 			# now go through @full_section_text and output 
-			puts "FOUND THE LINE "
-			newfile2.print "\t get \'#{@view_loc}/index#{@num}\' \n"
+			newfile2.print "\t get \'#{@controller_name}/index#{@num}\' \n"
 		end
 		newfile2.print line
-	end
-	newfile2.each_line do |line|
-		puts "newfile line is: #{line}"
 	end
 	File.rename(oldfile2, "#{@rails_repo}/config/old2.orig")
 	File.rename(newfile2, oldfile2)
@@ -225,14 +206,10 @@ def create_divs_from_section()
 		# if (line.include?("end"))
 		if (line.match(/^end/))
 			# now go through @full_section_text and output 
-			puts "FOUND THE END LINE "
 			@controller_line_to_add="\n \t def index#{@num} \n \t end \n"
 			newfile2.print @controller_line_to_add
 		end
 		newfile2.print line
-	end
-	newfile2.each_line do |line|
-		puts "newfile line is: #{line}"
 	end
 	File.rename(oldfile2, "#{@rails_repo}/app/controllers/old2.orig")
 	File.rename(newfile2, oldfile2)	
@@ -240,44 +217,9 @@ def create_divs_from_section()
 	insert_divs_to_index()
 end
 
-def create_html_files()
-	# put div container, div row in it by default
-end
 
-# make sure javascript RENDERS are after the html/css laods
-def create_js_files()
-end
-
-def create_css_files()
-end
-
-def append_to_assetsrb()
-end
-
-def add_line_to_routes()
-end
-
-def generate_index_file()
-	# current directory should be view_loc
-	puts "SECTIONS: #{@sections}"
-	puts @num
-	copy_header_to_index()
-	create_divs_from_section()
-end
-
-def print_all_vars()
-	puts "@create_loc: #{@create_loc}"
-	puts "@layout_name: #{@layout_name}"
-	puts "@id_name: #{@id_name}"
-	puts "@rails_repo: #{@rails_repo}"
-	puts "@view_loc: #{@view_loc}"
-	puts "@section_name: #{@section_name}"
-
-	puts "@stylesheet_loc: #{@stylesheet_loc}"
-	puts "@javascript_loc: #{@javascript_loc}"
-end
-welcome_prompt_and_starting_information()
-get_view_location()
-get_list_of_sections()
-generate_index_file()
+prompt_user_for_input()
+get_sections_from_user()
+copy_header_to_index()
+create_divs_from_section()
 print_all_vars()

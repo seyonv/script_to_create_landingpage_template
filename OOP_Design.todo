@@ -1,0 +1,53 @@
+OOP Design:
+
+  For Each Class, define 
+    a) It's purpose (what it represents and what functionality it handles)
+      (This includes which of the steps in particular they'll handle)
+    b) attributes defined in each class
+    c) Methods
+
+------------------------------
+  Class FileSystem
+
+i) Purpose is to act as the class that stores all information (in attributes)
+about where folders, files are located. 
+ii) Attributes:
+iii) 
+
+------------------------------
+Class UserInput
+
+Because input only happends once, don't instantiate an object but instead save everything
+into static variables that can be accessed using UserInput directly
+
+i) Purpose is to define all the methods that deal with getting input from the user and storing them in
+the appropriate attributes within the class. Other classes then use this object to initialize their values
+
+------------------------------
+Class View
+i) View class consists of all things that make up the view
+
+------------------------------
+Class indexfile
+ ii) attributes: array of ids, array of files to be rendered, 
+
+------------------------------
+Class printvariables
+
+
+------------------------------
+Class GenerateAssets
+
+
+
+------------------------------
+Class Section
+
+
+Section consists of the name of the section (from user input)
+attribute representing what the stylesheet associated with it is like
+attribute representing what the javascript associated with it is like
+
+------------------------------
+
+

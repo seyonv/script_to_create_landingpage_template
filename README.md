@@ -6,3 +6,6 @@
 <!-- BETTER names for files/folders/locations -->
 <!-- Function that handles inserting a line BEFORE a particular line
 (parameters are a=file_to_insert_in, b="line_to_serach_for_in_file, c="line to insert before that line"-->
+
+
+<!-- Think about ways that parts can be useful OUTSIDE of this particular script -->
